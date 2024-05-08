@@ -25,7 +25,7 @@ The data set is composed of 168 excel files with 44 columns and 55 or 56 rows ea
 
 2. Save the Original files" attached in this repo in a directory and replace the following values: <br>
     * In the variable "root_dir" add the root of the directory in which you want this folder to be created. I recommend to choose the same directory in which "Original files" is saved in order to have everything in one place. This step must be done in order to create "Modified_files" and "Merged_files" directories automatically. Without these files, the code will not produce the end result. 
-    * At step 9 replace "host" with your DBMS instance name and "database" with your database where you wish to load these files. You can use your default database in order to not bother with creating a new DB. Also, you might need to change the authenthication method according to your set up. For detailed instruction for how to set up a connection according to your DBMS with SQLAlchemy go to: https://docs.sqlalchemy.org/en/20/core/engines.html 
+    * At step 9 replace "host" with your DBMS instance name and "database" with your database where you wish to load these files. You can use your default database in order to not bother with creating a new DB. Also, you might need to change the authenthication method according to your set up. For detailed instructions of how to set up a connection according to your DBMS with SQLAlchemy go to: https://docs.sqlalchemy.org/en/20/core/engines.html 
 
 
 ## Transformations
@@ -36,10 +36,8 @@ The data set is composed of 168 excel files with 44 columns and 55 or 56 rows ea
 # Data source path
 original_files = '<your file path>\Original files'
 
-
 # Root directory path
 root_dir = '<same root as the one from original_files>'
-
 
 # "Modified files" directory path
 modified_files = root_dir + "\Modified files"
@@ -145,9 +143,9 @@ modify_tables(original_files, modified_files) #Run "modify_tables" function
 
 ````
 
-7. For each subdirectory append all files into a single file and rename each file as "merged+report year"
+7. Merge all files pertaining to each subdirectory into a single one and rename each file as "merged+report year"
 8. From 2010 onwards, data has been scaled by 1M . To make the data liniar across all tables, multiply all the values from col C to BB by 1,000,000
-9. Change sheet name to  "year of the report"
+9. Replace the sheet name with the  year of the report
 
 
 ````python
@@ -175,7 +173,7 @@ def append_files(mod_files, dir_list, merged_files):
 
             if int(dir) > 2009:  # if subdirectory is from 2010 onwards, after appending, multiply values by 1M and then
                 excel_merged.iloc[:, 2:len(excel_merged.columns)] = excel_merged.iloc[:,
-                                                                    2:len(excel_merged.columns)] * 1000000
+                    2:len(excel_merged.columns)] * 1000000
                 excel_merged.to_excel(merged_file_path, sheet_name=dir, index=False, engine='openpyxl')
                 j += 1
                 print(f'File {merged_file_path} has been saved.'.format(file))
@@ -207,7 +205,7 @@ url_object = URL.create(
 
 engine = create_engine(url_object)
 
-metadata_obj = MetaData()
+metadata_obj = MetaData() #create metadata object for table creation
 
 for root, dirs, files in os.walk(merged_files):
     for excel in files:

@@ -11,10 +11,8 @@ import pyodbc
 # Data source path:
 original_files = 'D:\Projects and practice\Git projects\Excel-data-processing-project-python\Original files'
 
-
 # Root directory path
 root_dir = 'D:\Projects and practice\Git projects\Excel-data-processing-project-python'
-
 
 # "Modified files" directory path
 modified_files = root_dir + "\Modified_files"
@@ -23,9 +21,11 @@ modified_files = root_dir + "\Modified_files"
 merged_files = root_dir + "\Merged_files"
 
 
-# 1. If "Modified files" directory is not created, create a new directory.
-# If "Merged files" directory is not created, create a new directory.
-# If subdirectories are not created in the new folder, create a copy from the data source
+
+# 1. If "Modified files" directory is not created, create a new directory. <br>
+# If "Merged files" directory is not created, create a new directory. <br>
+# If subdirectories are not created in the "Modified files", create a copy from the data source.
+
 
 for root in os.walk(root_dir):  #create "Modified_files"
     while os.path.exists(modified_files) == False:
@@ -49,12 +49,12 @@ for root, dirs, files in os.walk(original_files): #create subdirectories in "Mod
             continue
 
 
-# 2. Tables before 2009 (including) has 4 rows before table header while tables from 2010 onward has 3 rows before the table header.
+# 2. Tables before 2009 (including) have 4 rows before table header while tables from 2010 onward have 3 rows before the header.
 # Delete first rows according to the reporting period.
 # 3. Delete last row and first and last column of each table
 # 4. Transpose each table.
 # 5. Add a new column with the date and month as per file name after column 1
-# 6. Replace column 1 header name with name "County"
+# 6. Replace column 1 header with "County"
 # 7. Change sheet name with date and month of the report
 
 def modify_tables(original_file, modified_file):
@@ -111,9 +111,9 @@ modify_tables(original_files, modified_files) #Run "modify_tables" function
 
 
 
-# 7. For each subdirectory append all files into a single file
-# 8. From 2010 onwards, data has been scaled by 1M . To make the data liniar, multiply all the values from col C to BB by 1,000,000
-# 9. Change sheet name to year of the report
+# 7. Merge all files pertaining to each subdirectory into a single one and rename each file as "merged+report year"
+# 8. From 2010 onwards, data has been scaled by 1M . To make the data liniar across all tables, multiply all the values from col C to BB by 1,000,000
+# 9. Replace the sheet name with the  year of the report
 
 dir_list = os.listdir(modified_files)  # list all the subdirectories from directory 'Modified files'.
 def append_files(mod_files, dir_list, merged_files):
