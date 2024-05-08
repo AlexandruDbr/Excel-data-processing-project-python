@@ -1,61 +1,33 @@
-# Excel-bulk-data-processing-project-python
-
-## Overview
-
-The main scope of this project is to manipulate data from multiple excel files (168 files, with around 50 KB each) and to automatically create a table for each file and import them in a SQL Server database. <br>
-Libraries used:
-* OS module to work with directories and files 
-* Pandas for data manipulation
-* SQLAlchemy to create new tables and import them in the database 
-
-## Data set
-
-### Data set
-
-The data set is composed of 168 excel files with 44 columns and 56 or 55 rows each, depending from which year was the data, which can be found in this repository under "Original_files". The data represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON).
+import pandas as pd
+import os
+import glob
+from sqlalchemy import create_engine, URL, Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+import pyodbc
 
 
-## To get started
-
-1. Install the following libraries:
-    ```python
-    pip install pandas
-    pip install sqlalchemy
-    pip instal pyodbc
-
-2. Save the Original files" attached in this repo in a directory and  replace the following values: <br>
-    * In the variable "root_dir" add the root of the directory in which "Original files" is saved. This must be done in order to create "Modified_files" and "Merged_files" directories automatically. Without these files, the code will not produce the end result. 
-    * At step 9 Replace "host" with your DBMS instance name and "database", as well as the authenthication method according to your set up. You can use your default database in order to not bother with creating a new DB.
-
-
-## Transformations
-
-```python
 # Directory paths:
 
-# Data source path
-original_files = '<your file path>\Original files'
+# Data source path:
+original_files = 'D:\Projects and practice\Git projects\Excel-data-processing-project-python\Original files'
 
 
 # Root directory path
-root_dir = '<same root as the one from original_files>'
+root_dir = 'D:\Projects and practice\Git projects\Excel-data-processing-project-python'
 
 
 # "Modified files" directory path
-modified_files = root_dir + "\Modified files"
+modified_files = root_dir + "\Modified_files"
 
 # "Merged files" directory path
-merged_files = root_dir + "\Merged files"
-```
+merged_files = root_dir + "\Merged_files"
 
-<br>
 
-1. If "Modified files" directory is not created, create a new directory. <br>
-If "Merged files" directory is not created, create a new directory. <br>
-If subdirectories are not created in the new folder, create a copy from the data source.
+# 1. If "Modified files" directory is not created, create a new directory.
+# If "Merged files" directory is not created, create a new directory.
+# If subdirectories are not created in the new folder, create a copy from the data source
 
-```python
-for root in os.walk(root_dir): #create "Modified_files" 
+for root in os.walk(root_dir):  #create "Modified_files"
     while os.path.exists(modified_files) == False:
         os.mkdir(modified_files)
     else:
@@ -75,22 +47,16 @@ for root, dirs, files in os.walk(original_files): #create subdirectories in "Mod
             os.mkdir(new_directory_path)
         else:
             continue
-````
-<br>
 
-2. Tables before 2009 (including) has 4 rows before table header while tables from 2010 onward has 3 rows before the table header. Delete first rows according to the reporting period. 
 
-3. Delete last row and first and last column of each table   
+# 2. Tables before 2009 (including) has 4 rows before table header while tables from 2010 onward has 3 rows before the table header.
+# Delete first rows according to the reporting period.
+# 3. Delete last row and first and last column of each table
+# 4. Transpose each table.
+# 5. Add a new column with the date and month as per file name after column 1
+# 6. Replace column 1 header name with name "County"
+# 7. Change sheet name with date and month of the report
 
-4. Transpose each table.
-
-5. Add a new column with the date and month as per file name after column 1
-
-6. Replace column 1 header name with name "County"
-
-7. Change sheet name with date and month of the report
-
-````python
 def modify_tables(original_file, modified_file):
     print('Process started')
     i = 0  # total nr of files modified
@@ -143,21 +109,18 @@ def modify_tables(original_file, modified_file):
 
 modify_tables(original_files, modified_files) #Run "modify_tables" function
 
-````
-
-7. For each subdirectory append all files into a single file
-8. From 2010 onwards, data has been scaled by 1M . To make the data liniar, multiply all the values from col C to BB by 1,000,000
-9. Change sheet name to year of the report
 
 
-````python
+# 7. For each subdirectory append all files into a single file
+# 8. From 2010 onwards, data has been scaled by 1M . To make the data liniar, multiply all the values from col C to BB by 1,000,000
+# 9. Change sheet name to year of the report
 
 dir_list = os.listdir(modified_files)  # list all the subdirectories from directory 'Modified files'.
 def append_files(mod_files, dir_list, merged_files):
     print("File merging process started")
     i = 0 #count the number of files that already exist
     j = 0  # count the number of files saved
-    
+
     for dir in dir_list:
         excl_list = []  # will be used as a list of all excels for each subdirectory iteration
         subdir_path = os.path.join(mod_files, dir)  # path of each subdirectory
@@ -188,12 +151,10 @@ def append_files(mod_files, dir_list, merged_files):
 
 append_files(modified_files, dir_list, merged_files) #Run "append_files" function
 
-````
 
 
-9. Connect to the DB, create tables and insert all tables.
+# 5. Connect to server, create a new database, create 12 new tables and import final data
 
-````python
 url_object = URL.create(
     'mssql+pyodbc',
     host='ALEXANDRUPC\SQLSERVER2022',
@@ -225,5 +186,3 @@ for root, dirs, files in os.walk(merged_files):
                     if_exists='replace',
                     index=False)  # write records stored in df in the SQL table defined
 print(f"All 12 files have been loaded in the database")
-
-````
