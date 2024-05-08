@@ -2,7 +2,7 @@
 
 ## Overview
 
-The main scope of this project is to manipulate data from multiple excel files (168 files, with around 50 KB each) and to automatically create a table for each file and import them in a SQL Server database. <br>
+The main scope of this project is to manipulate data from multiple excel files (168 files, with around 50 KB each) by applying a set of transformations, including merging files, new folder creation and data ingestion in a SQL Server database. <br>
 Libraries used:
 * OS module to work with directories and files 
 * Pandas for data manipulation
@@ -12,7 +12,7 @@ Libraries used:
 
 ### Data set
 
-The data set is composed of 168 excel files with 44 columns and 56 or 55 rows each, depending from which year was the data, which can be found in this repository under "Original_files". The data represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON).
+The data set is composed of 168 excel files with 44 columns and 55 or 56 rows each, depending from which year was the data. The data set can be found in this repository under "Original_files". The data represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON).
 
 
 ## To get started
@@ -23,9 +23,9 @@ The data set is composed of 168 excel files with 44 columns and 56 or 55 rows ea
     pip install sqlalchemy
     pip instal pyodbc
 
-2. Save the Original files" attached in this repo in a directory and  replace the following values: <br>
-    * In the variable "root_dir" add the root of the directory in which "Original files" is saved. This must be done in order to create "Modified_files" and "Merged_files" directories automatically. Without these files, the code will not produce the end result. 
-    * At step 9 Replace "host" with your DBMS instance name and "database", as well as the authenthication method according to your set up. You can use your default database in order to not bother with creating a new DB.
+2. Save the Original files" attached in this repo in a directory and replace the following values: <br>
+    * In the variable "root_dir" add the root of the directory in which you want this folder to be created. I recommend to choose the same directory in which "Original files" is saved in order to have everything in one place. This step must be done in order to create "Modified_files" and "Merged_files" directories automatically. Without these files, the code will not produce the end result. 
+    * At step 9 replace "host" with your DBMS instance name and "database" with your database where you wish to load these files. You can use your default database in order to not bother with creating a new DB. Also, you might need to change the authenthication method according to your set up. For detailed instruction for how to set up a connection according to your DBMS with SQLAlchemy go to: https://docs.sqlalchemy.org/en/20/core/engines.html 
 
 
 ## Transformations
@@ -52,7 +52,7 @@ merged_files = root_dir + "\Merged files"
 
 1. If "Modified files" directory is not created, create a new directory. <br>
 If "Merged files" directory is not created, create a new directory. <br>
-If subdirectories are not created in the new folder, create a copy from the data source.
+If subdirectories are not created in the "Modified files", create a copy from the data source.
 
 ```python
 for root in os.walk(root_dir): #create "Modified_files" 
@@ -78,7 +78,7 @@ for root, dirs, files in os.walk(original_files): #create subdirectories in "Mod
 ````
 <br>
 
-2. Tables before 2009 (including) has 4 rows before table header while tables from 2010 onward has 3 rows before the table header. Delete first rows according to the reporting period. 
+2. Tables before 2009 (including) have 4 rows before table header while tables from 2010 onward have 3 rows before the header. Delete first rows according to the reporting period. 
 
 3. Delete last row and first and last column of each table   
 
@@ -86,7 +86,7 @@ for root, dirs, files in os.walk(original_files): #create subdirectories in "Mod
 
 5. Add a new column with the date and month as per file name after column 1
 
-6. Replace column 1 header name with name "County"
+6. Replace column 1 header with "County"
 
 7. Change sheet name with date and month of the report
 
@@ -145,9 +145,9 @@ modify_tables(original_files, modified_files) #Run "modify_tables" function
 
 ````
 
-7. For each subdirectory append all files into a single file
-8. From 2010 onwards, data has been scaled by 1M . To make the data liniar, multiply all the values from col C to BB by 1,000,000
-9. Change sheet name to year of the report
+7. For each subdirectory append all files into a single file and rename each file as "merged+report year"
+8. From 2010 onwards, data has been scaled by 1M . To make the data liniar across all tables, multiply all the values from col C to BB by 1,000,000
+9. Change sheet name to  "year of the report"
 
 
 ````python
