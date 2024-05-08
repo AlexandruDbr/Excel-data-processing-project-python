@@ -125,18 +125,18 @@ def append_files(mod_files, dir_list, merged_files):
         excl_list = []  # will be used as a list of all excels for each subdirectory iteration
         subdir_path = os.path.join(mod_files, dir)  # path of each subdirectory
         merged_file_path = os.path.join(merged_files, f"merged_f{dir}.xlsx")  # new exce path for merged excls
-        if os.path.isfile(merged_file_path) == True:
+        if os.path.isfile(merged_file_path) == True: #check if merged file already exist
             i += 1
             if i == 12:  # if al the files exist, break the loop and print message
                 print("All files already exists")
                 break
         else:
             files = glob.glob(subdir_path + "/*.xlsx")  # get all files which end in xlsx from each subdirectory
-            for file in files:  # for excel files in each subdirectory, read and append them in the excl_list
+            for file in files:  # # for each excel file in each subdirectory, read and append them in the excl_list
                 excl_list.append(pd.read_excel(file))
             excel_merged = pd.concat(excl_list, ignore_index=True)  # merge all the excels from the list
 
-            if int(dir) > 2009:  # if subdirectory is from 2010 onwards, after appending, multiply values by 1M and then
+            if int(dir) > 2009:  # if subdirectory is from 2010 onwards, after appending, multiply values by 1M
                 excel_merged.iloc[:, 2:len(excel_merged.columns)] = excel_merged.iloc[:,
                                                                     2:len(excel_merged.columns)] * 1000000
                 excel_merged.to_excel(merged_file_path, sheet_name=dir, index=False, engine='openpyxl')
