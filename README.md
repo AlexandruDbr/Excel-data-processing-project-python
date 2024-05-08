@@ -12,8 +12,7 @@ Libraries used:
 
 ### Data set
 
-The data set is composed of 168 excel files with 44 columns and 55 or 56 rows each, depending from which year was the data. The data set can be found in this repository under "Original_files". The data represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON).
-
+The data set represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON). It is composed of 168 excel files with 44 columns and 55 or 56 rows each, depending from which year was the data. The data set can be found in this repository under "Original_files".
 
 ## To get started
 
@@ -25,7 +24,7 @@ The data set is composed of 168 excel files with 44 columns and 55 or 56 rows ea
 
 2. Save the Original files" attached in this repo in a directory and replace the following values: <br>
     * In the variable "root_dir" add the root of the directory in which you want this folder to be created. I recommend to choose the same directory in which "Original files" is saved in order to have everything in one place. This step must be done in order to create "Modified_files" and "Merged_files" directories automatically. Without these files, the code will not produce the end result. 
-    * At step 9 replace "host" with your DBMS instance name and "database" with your database where you wish to load these files. You can use your default database in order to not bother with creating a new DB. Also, you might need to change the authenthication method according to your set up. For detailed instructions of how to set up a connection according to your DBMS with SQLAlchemy go to: https://docs.sqlalchemy.org/en/20/core/engines.html 
+    * At step 9 replace "host" with your DBMS instance name and "database" with your database where you wish to load these files. You can use your DBMS default database in order to not bother with creating a new DB. Also, you might need to change the authenthication method according to your set up. For detailed instructions of how to set up a connection according to your DBMS with SQLAlchemy go to: https://docs.sqlalchemy.org/en/20/core/engines.html 
 
 
 ## Transformations
@@ -145,7 +144,7 @@ modify_tables(original_files, modified_files) #Run "modify_tables" function
 
 7. Merge all files pertaining to each subdirectory into a single one and rename each file as "merged+report year"
 8. From 2010 onwards, data has been scaled by 1M . To make the data liniar across all tables, multiply all the values from col C to BB by 1,000,000
-9. Replace the sheet name with the  year of the report
+9. Replace the sheet name with the year of the report
 
 
 ````python
@@ -160,18 +159,18 @@ def append_files(mod_files, dir_list, merged_files):
         excl_list = []  # will be used as a list of all excels for each subdirectory iteration
         subdir_path = os.path.join(mod_files, dir)  # path of each subdirectory
         merged_file_path = os.path.join(merged_files, f"merged_f{dir}.xlsx")  # new exce path for merged excls
-        if os.path.isfile(merged_file_path) == True:
+        if os.path.isfile(merged_file_path) == True: #check if merged file already exist
             i += 1
             if i == 12:  # if al the files exist, break the loop and print message
                 print("All files already exists")
                 break
         else:
             files = glob.glob(subdir_path + "/*.xlsx")  # get all files which end in xlsx from each subdirectory
-            for file in files:  # for excel files in each subdirectory, read and append them in the excl_list
+            for file in files:  # for each excel file in each subdirectory, read and append them in the excl_list
                 excl_list.append(pd.read_excel(file))
             excel_merged = pd.concat(excl_list, ignore_index=True)  # merge all the excels from the list
 
-            if int(dir) > 2009:  # if subdirectory is from 2010 onwards, after appending, multiply values by 1M and then
+            if int(dir) > 2009:  # if subdirectory is from 2010 onwards, after appending, multiply values by 1M
                 excel_merged.iloc[:, 2:len(excel_merged.columns)] = excel_merged.iloc[:,
                     2:len(excel_merged.columns)] * 1000000
                 excel_merged.to_excel(merged_file_path, sheet_name=dir, index=False, engine='openpyxl')
