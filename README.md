@@ -2,7 +2,7 @@
 
 ## Overview
 
-The main scope of this project is to manipulate data from multiple excel files (168 files, with around 50 KB each) by applying a set of transformations, including merging files, new folder creation and data ingestion in a SQL Server database. <br>
+The main scope of this project is to manipulate data from multiple excel files stored locally (168 files, with around 50 KB each) by applying a set of transformations, including merging files, new folder creation and data ingestion in a SQL Server database. <br>
 Libraries used:
 * OS module to work with directories and files 
 * Pandas for data manipulation
