@@ -1,4 +1,4 @@
-# Excel-bulk-data-processing-project-python
+# Excel data processing project with Python
 
 ## Overview
 
