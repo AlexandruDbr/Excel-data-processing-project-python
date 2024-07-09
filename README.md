@@ -10,7 +10,8 @@ Libraries used:
 
 ## Data set
 
-The data set represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON). It is composed of 168 excel files with 44 columns and 55 or 56 rows each, depending from which year was the data. The data set can be found in this repository under "Original_files".
+The data set represents consumer and business loans from the National Bank of Romania, broken down into multiple subcategories, in national currency and in other currencies (converted in RON). It is composed of 156 excel files with 44 columns and 55 or 56 rows each, depending from which year was the data. The data set can be found in this repository under "Original_files".
+Based on these files, other 12 newly created files (1 for each month) will be created and imported in the database.
 
 ## To get started
 
